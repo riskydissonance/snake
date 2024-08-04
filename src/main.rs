@@ -1,8 +1,10 @@
+use rand::Rng;
 use raylib::prelude::*;
 
 const WINDOW_WIDTH: i32 = 800;
 const WINDOW_HEIGHT: i32 = 450;
 const SNAKE_SIZE: i32 = 10;
+const FOOD_SIZE: i32 = 10;
 
 // TODO
 // - Add wasm
@@ -18,6 +20,17 @@ enum Direction {
     Down,
     Left,
     Right,
+}
+
+struct Food {
+    x: i32,
+    y: i32,
+    eaten: bool,
+}
+
+struct GameState {
+    snake: Snake,
+    food: Food,
 }
 
 struct Snake {
@@ -40,33 +53,69 @@ fn main() {
         y: 0,
     };
 
+    let mut food = Food {
+        x: 0,
+        y: 0,
+        eaten: true,
+    };
+
+    let mut game_state = GameState { snake, food };
+
     let mut game_over = false;
     // TODO probably shouldn't set speed via fps
     rl.set_target_fps(120);
     while !rl.window_should_close() {
         let mut d = rl.begin_drawing(&thread);
 
-        if game_over || check_game_over(&snake) {
+        if game_over || check_game_over(&game_state.snake) {
             game_over = true;
             d.draw_text("Game Over", 320, 225, 20, Color::RED);
             continue;
         }
 
         d.clear_background(Color::DARKGREEN);
-        d.draw_text(
-            "This is snake, but it's not done yet.",
-            190,
-            200,
-            20,
-            Color::LIGHTGRAY,
-        );
 
-        move_snake(&d, &mut snake);
-        draw_snake(&snake, &mut d);
+        move_snake(&mut game_state.snake, &d);
+        draw_snake(&game_state.snake, &mut d);
+        draw_food(&mut game_state, &mut d);
     }
 }
 
-fn move_snake(d: &RaylibDrawHandle, snake: &mut Snake) {
+fn is_in_snake(x: i32, y: i32, snake: &Snake) -> bool {
+    if x == snake.x && y == snake.y {
+        return true;
+    }
+    return false;
+}
+
+fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
+    if game_state.food.eaten {
+        let mut rng = rand::thread_rng();
+        let mut x = rng.gen_range(0..WINDOW_WIDTH);
+        let mut y = rng.gen_range(0..WINDOW_HEIGHT);
+        while is_in_snake(x, y, &game_state.snake) {
+            x = rng.gen_range(0..WINDOW_WIDTH);
+            y = rng.gen_range(0..WINDOW_HEIGHT);
+        }
+        game_state.food.x = x;
+        game_state.food.y = y;
+        game_state.food.eaten = false;
+    } else {
+        if is_in_snake(game_state.food.x, game_state.food.y, &game_state.snake) {
+            game_state.snake.length += 1;
+            game_state.food.eaten = true;
+        }
+    }
+    d.draw_rectangle(
+        game_state.food.x,
+        game_state.food.y,
+        FOOD_SIZE,
+        FOOD_SIZE,
+        Color::BLACK,
+    );
+}
+
+fn move_snake(snake: &mut Snake, d: &RaylibDrawHandle) {
     if d.is_key_pressed(KeyboardKey::KEY_UP) {
         snake.direction = Direction::Up;
     }
