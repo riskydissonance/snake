@@ -4,6 +4,15 @@ const WINDOW_WIDTH: i32 = 800;
 const WINDOW_HEIGHT: i32 = 450;
 const SNAKE_SIZE: i32 = 10;
 
+// TODO
+// - Add wasm
+// - Add food
+// - Add rendering increasing length
+// - Add self-collision detection
+// - Add score
+// - Add speed increase
+// - Add cross-over sides of screen
+
 enum Direction {
     Up,
     Down,
@@ -32,6 +41,7 @@ fn main() {
     };
 
     let mut game_over = false;
+    // TODO probably shouldn't set speed via fps
     rl.set_target_fps(120);
     while !rl.window_should_close() {
         let mut d = rl.begin_drawing(&thread);
@@ -51,34 +61,38 @@ fn main() {
             Color::LIGHTGRAY,
         );
 
-        if d.is_key_pressed(KeyboardKey::KEY_UP) {
-            snake.direction = Direction::Up;
-        }
-        if d.is_key_pressed(KeyboardKey::KEY_DOWN) {
-            snake.direction = Direction::Down;
-        }
-        if d.is_key_pressed(KeyboardKey::KEY_LEFT) {
-            snake.direction = Direction::Left;
-        }
-        if d.is_key_pressed(KeyboardKey::KEY_RIGHT) {
-            snake.direction = Direction::Right;
-        }
-
-        match snake.direction {
-            Direction::Up => {
-                snake.y -= 1;
-            }
-            Direction::Down => {
-                snake.y += 1;
-            }
-            Direction::Left => {
-                snake.x -= 1;
-            }
-            Direction::Right => {
-                snake.x += 1;
-            }
-        }
+        move_snake(&d, &mut snake);
         draw_snake(&snake, &mut d);
+    }
+}
+
+fn move_snake(d: &RaylibDrawHandle, snake: &mut Snake) {
+    if d.is_key_pressed(KeyboardKey::KEY_UP) {
+        snake.direction = Direction::Up;
+    }
+    if d.is_key_pressed(KeyboardKey::KEY_DOWN) {
+        snake.direction = Direction::Down;
+    }
+    if d.is_key_pressed(KeyboardKey::KEY_LEFT) {
+        snake.direction = Direction::Left;
+    }
+    if d.is_key_pressed(KeyboardKey::KEY_RIGHT) {
+        snake.direction = Direction::Right;
+    }
+
+    match snake.direction {
+        Direction::Up => {
+            snake.y -= 1;
+        }
+        Direction::Down => {
+            snake.y += 1;
+        }
+        Direction::Left => {
+            snake.x -= 1;
+        }
+        Direction::Right => {
+            snake.x += 1;
+        }
     }
 }
 
@@ -87,7 +101,7 @@ fn draw_snake(snake: &Snake, d: &mut RaylibDrawHandle) {
     for i in 0..snake.length {
         d.draw_rectangle(
             snake.x,
-            snake.y - i * SNAKE_SIZE + 1,
+            snake.y - i * SNAKE_SIZE,
             SNAKE_SIZE,
             SNAKE_SIZE,
             Color::BLACK,
