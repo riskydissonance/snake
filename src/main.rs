@@ -31,6 +31,7 @@ struct Food {
 struct GameState {
     snake: Snake,
     food: Food,
+    game_over: bool,
 }
 
 struct Snake {
@@ -58,16 +59,16 @@ fn main() {
             y: 0,
             eaten: true,
         },
+        game_over: false,
     };
 
-    let mut game_over = false;
     // TODO probably shouldn't set speed via fps
     rl.set_target_fps(120);
     while !rl.window_should_close() {
         let mut d = rl.begin_drawing(&thread);
 
-        if game_over || check_game_over(&game_state.snake) {
-            game_over = true;
+        if game_state.game_over || check_game_over(&game_state.snake) {
+            game_state.game_over = true;
             d.draw_text("Game Over", 320, 225, 20, Color::RED);
             continue;
         }
