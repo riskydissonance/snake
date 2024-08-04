@@ -46,20 +46,19 @@ fn main() {
         .title("Snake")
         .build();
 
-    let mut snake = Snake {
-        length: 1,
-        direction: Direction::Down,
-        x: 0,
-        y: 0,
+    let mut game_state = GameState {
+        snake: Snake {
+            length: 1,
+            direction: Direction::Down,
+            x: 0,
+            y: 0,
+        },
+        food: Food {
+            x: 0,
+            y: 0,
+            eaten: true,
+        },
     };
-
-    let mut food = Food {
-        x: 0,
-        y: 0,
-        eaten: true,
-    };
-
-    let mut game_state = GameState { snake, food };
 
     let mut game_over = false;
     // TODO probably shouldn't set speed via fps
@@ -82,6 +81,7 @@ fn main() {
 }
 
 fn is_in_snake(x: i32, y: i32, snake: &Snake) -> bool {
+    // TODO box intersection
     if x == snake.x && y == snake.y {
         return true;
     }
@@ -146,6 +146,7 @@ fn move_snake(snake: &mut Snake, d: &RaylibDrawHandle) {
 }
 
 fn draw_snake(snake: &Snake, d: &mut RaylibDrawHandle) {
+    // TODO draw snake body
     d.draw_rectangle(snake.x, snake.y, SNAKE_SIZE, SNAKE_SIZE, Color::BLACK);
     for i in 0..snake.length {
         d.draw_rectangle(
@@ -159,6 +160,7 @@ fn draw_snake(snake: &Snake, d: &mut RaylibDrawHandle) {
 }
 
 fn check_game_over(snake: &Snake) -> bool {
+    // TODO snake should actually cross over bounds and only end if intersects with self
     if snake.x < 0
         || snake.x + SNAKE_SIZE > WINDOW_WIDTH
         || snake.y < 0
