@@ -1,6 +1,6 @@
 use rand::Rng;
-use raylib::prelude::*;
 use raylib::consts::ffi::KeyboardKey;
+use raylib::prelude::*;
 
 const WINDOW_WIDTH: i32 = 800;
 const WINDOW_HEIGHT: i32 = 450;
@@ -18,12 +18,12 @@ const GRID_SQUARE_SIZE: i32 = 10;
 
 struct Vector2 {
     x: i32,
-    y: i32
+    y: i32,
 }
 
 impl Vector2 {
     fn new(x: i32, y: i32) -> Vector2 {
-        return Vector2{x, y};
+        return Vector2 { x, y };
     }
 }
 
@@ -46,10 +46,9 @@ struct GameState {
 }
 
 struct Snake {
-    length: i32,
+    body: Vec<Vector2>,
     direction: Direction,
-    position: Vector2,
-    speed: i32
+    speed: i32,
 }
 
 fn main() {
@@ -60,10 +59,9 @@ fn main() {
 
     let mut game_state = GameState {
         snake: Snake {
-            length: 1,
+            body: vec![Vector2::new(0, 0)],
             direction: Direction::Down,
-            position: Vector2::new(0, 0),
-            speed: GRID_SQUARE_SIZE
+            speed: GRID_SQUARE_SIZE,
         },
         food: Food {
             position: Vector2::new(0, 0),
@@ -85,16 +83,17 @@ fn main() {
 
         d.clear_background(Color::DARKGREEN);
 
-        move_snake(&mut game_state.snake, &d);
+        move_snake(&mut game_state, &d);
         draw_snake(&game_state.snake, &mut d);
         draw_food(&mut game_state, &mut d);
     }
 }
 
 fn is_in_snake(x: i32, y: i32, snake: &Snake) -> bool {
-    // TODO box intersection
-    if x == snake.position.x && y == snake.position.y {
-        return true;
+    for i in 0..snake.body.len() {
+        if snake.body[i].x == x && snake.body[i].y == y {
+            return true;
+        }
     }
     return false;
 }
@@ -102,18 +101,21 @@ fn is_in_snake(x: i32, y: i32, snake: &Snake) -> bool {
 fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
     if game_state.food.eaten {
         let mut rng = rand::thread_rng();
-        let mut x = ((rng.gen_range(0..WINDOW_WIDTH) + 5) /GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
-        let mut y = ((rng.gen_range(0..WINDOW_HEIGHT) + 5) /GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
+        let mut x = ((rng.gen_range(0..WINDOW_WIDTH) + 5) / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
+        let mut y = ((rng.gen_range(0..WINDOW_HEIGHT) + 5) / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
         while is_in_snake(x, y, &game_state.snake) {
-            x = ((rng.gen_range(0..WINDOW_WIDTH) + 5) /GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
+            x = ((rng.gen_range(0..WINDOW_WIDTH) + 5) / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
             y = ((rng.gen_range(0..WINDOW_HEIGHT) + 5) / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
         }
         game_state.food.position.x = x;
         game_state.food.position.y = y;
         game_state.food.eaten = false;
     } else {
-        if is_in_snake(game_state.food.position.x, game_state.food.position.y, &game_state.snake) {
-            game_state.snake.length += 1;
+        if is_in_snake(
+            game_state.food.position.x,
+            game_state.food.position.y,
+            &game_state.snake,
+        ) {
             game_state.food.eaten = true;
         }
     }
@@ -126,59 +128,67 @@ fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
     );
 }
 
-fn move_snake(snake: &mut Snake, d: &RaylibDrawHandle) {
+fn move_snake(game_state: &mut GameState, d: &RaylibDrawHandle) {
+    // TODO shouldn't be able to choose to go 'backwards'
     if d.is_key_pressed(KeyboardKey::KEY_UP) {
-        snake.direction = Direction::Up;
+        game_state.snake.direction = Direction::Up;
     }
     if d.is_key_pressed(KeyboardKey::KEY_DOWN) {
-        snake.direction = Direction::Down;
+        game_state.snake.direction = Direction::Down;
     }
     if d.is_key_pressed(KeyboardKey::KEY_LEFT) {
-        snake.direction = Direction::Left;
+        game_state.snake.direction = Direction::Left;
     }
     if d.is_key_pressed(KeyboardKey::KEY_RIGHT) {
-        snake.direction = Direction::Right;
+        game_state.snake.direction = Direction::Right;
     }
-    
-    match snake.direction {
+
+    match game_state.snake.direction {
         Direction::Up => {
-            snake.position.y -= snake.speed;
+            game_state.snake.body.push(Vector2::new(
+                game_state.snake.body.last().unwrap().x,
+                game_state.snake.body.last().unwrap().y - game_state.snake.speed,
+            ));
         }
         Direction::Down => {
-            snake.position.y += snake.speed;
+            game_state.snake.body.push(Vector2::new(
+                game_state.snake.body.last().unwrap().x,
+                game_state.snake.body.last().unwrap().y + game_state.snake.speed,
+            ));
         }
         Direction::Left => {
-            snake.position.x -= snake.speed;
+            game_state.snake.body.push(Vector2::new(
+                game_state.snake.body.last().unwrap().x - game_state.snake.speed,
+                game_state.snake.body.last().unwrap().y,
+            ));
         }
         Direction::Right => {
-            snake.position.x += snake.speed;
+            game_state.snake.body.push(Vector2::new(
+                game_state.snake.body.last().unwrap().x + game_state.snake.speed,
+                game_state.snake.body.last().unwrap().y,
+            ));
         }
+    }
+
+    if !game_state.food.eaten {
+        game_state.snake.body.remove(0);
     }
 }
 
 fn draw_snake(snake: &Snake, d: &mut RaylibDrawHandle) {
-    // TODO draw snake body
-
-    d.draw_rectangle(snake.position.x, snake.position.y, SNAKE_SIZE, SNAKE_SIZE, Color::BLACK);
-    for i in 0..snake.length {
-        d.draw_rectangle(
-            snake.position.x,
-            snake.position.y - i * SNAKE_SIZE,
-            SNAKE_SIZE,
-            SNAKE_SIZE,
-            Color::BLACK,
-        );
-    }
+    snake.body.iter().for_each(|part| {
+        d.draw_rectangle(part.x, part.y, SNAKE_SIZE, SNAKE_SIZE, Color::BLACK);
+    });
 }
 
-fn check_game_over(snake: &Snake) -> bool {
+fn check_game_over(_snake: &Snake) -> bool {
     // TODO snake should actually cross over bounds and only end if intersects with self
-    if snake.position.x < 0
-        || snake.position.x + SNAKE_SIZE > WINDOW_WIDTH
-        || snake.position.y < 0
-        || snake.position.y + SNAKE_SIZE > WINDOW_HEIGHT
-    {
-        return true;
-    }
+    // if snake.position.x < 0
+    //     || snake.position.x + SNAKE_SIZE > WINDOW_WIDTH
+    //     || snake.position.y < 0
+    //     || snake.position.y + SNAKE_SIZE > WINDOW_HEIGHT
+    // {
+    //     return true;
+    // }
     return false;
 }
