@@ -23,7 +23,7 @@ struct Vector2 {
 
 impl Vector2 {
     fn new(x: i32, y: i32) -> Vector2 {
-        return Vector2 { x, y };
+        Vector2 { x, y }
     }
 }
 
@@ -45,6 +45,23 @@ struct GameState {
     game_over: bool,
 }
 
+impl GameState {
+    fn new() -> GameState {
+        GameState {
+            snake: Snake {
+                body: vec![Vector2::new(0, 0)],
+                direction: Direction::Down,
+                speed: GRID_SQUARE_SIZE,
+            },
+            food: Food {
+                position: Vector2::new(0, 0),
+                eaten: true,
+            },
+            game_over: false,
+        }
+    }
+}
+
 struct Snake {
     body: Vec<Vector2>,
     direction: Direction,
@@ -57,19 +74,7 @@ fn main() {
         .title("Snake")
         .build();
 
-    let mut game_state = GameState {
-        snake: Snake {
-            body: vec![Vector2::new(0, 0)],
-            direction: Direction::Down,
-            speed: GRID_SQUARE_SIZE,
-        },
-        food: Food {
-            position: Vector2::new(0, 0),
-            eaten: true,
-        },
-        game_over: false,
-    };
-
+    let mut game_state = GameState::new();
     // TODO probably shouldn't set speed via fps
     rl.set_target_fps(10);
     while !rl.window_should_close() {
@@ -78,6 +83,9 @@ fn main() {
         if game_state.game_over || check_game_over(&game_state.snake) {
             game_state.game_over = true;
             d.draw_text("Game Over", 320, 225, 20, Color::RED);
+            if d.is_key_pressed(KeyboardKey::KEY_ENTER) {
+                game_state = GameState::new();
+            }
             continue;
         }
 
