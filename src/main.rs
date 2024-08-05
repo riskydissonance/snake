@@ -138,18 +138,30 @@ fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
 }
 
 fn move_snake(game_state: &mut GameState, d: &RaylibDrawHandle) {
-    // TODO shouldn't be able to choose to go 'backwards'
+    // TODO there has to be nicer way to do this
     if d.is_key_pressed(KeyboardKey::KEY_UP) {
-        game_state.snake.direction = Direction::Up;
+        if let Direction::Down = game_state.snake.direction {
+        } else {
+            game_state.snake.direction = Direction::Up;
+        }
     }
     if d.is_key_pressed(KeyboardKey::KEY_DOWN) {
-        game_state.snake.direction = Direction::Down;
+        if let Direction::Up = game_state.snake.direction {
+        } else {
+            game_state.snake.direction = Direction::Down;
+        }
     }
     if d.is_key_pressed(KeyboardKey::KEY_LEFT) {
-        game_state.snake.direction = Direction::Left;
+        if let Direction::Right = game_state.snake.direction {
+        } else {
+            game_state.snake.direction = Direction::Left;
+        }
     }
     if d.is_key_pressed(KeyboardKey::KEY_RIGHT) {
-        game_state.snake.direction = Direction::Right;
+        if let Direction::Left = game_state.snake.direction {
+        } else {
+            game_state.snake.direction = Direction::Right;
+        }
     }
 
     match game_state.snake.direction {
