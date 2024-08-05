@@ -198,14 +198,16 @@ fn draw_snake(snake: &Snake, d: &mut RaylibDrawHandle) {
     });
 }
 
-fn check_game_over(_snake: &Snake) -> bool {
-    // TODO snake should actually cross over bounds and only end if intersects with self
-    // if snake.position.x < 0
-    //     || snake.position.x + SNAKE_SIZE > WINDOW_WIDTH
-    //     || snake.position.y < 0
-    //     || snake.position.y + SNAKE_SIZE > WINDOW_HEIGHT
-    // {
-    //     return true;
-    // }
+fn check_game_over(snake: &Snake) -> bool {
+    for i in 0..snake.body.len() {
+        for j in 0..snake.body.len() {
+            if i == j {
+                continue;
+            }
+            if snake.body[i].x == snake.body[j].x && snake.body[i].y == snake.body[j].y {
+                return true;
+            }
+        }
+    }
     return false;
 }
