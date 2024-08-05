@@ -157,7 +157,7 @@ fn move_snake(game_state: &mut GameState, d: &RaylibDrawHandle) {
         Direction::Up => {
             let x = game_state.snake.body.last().unwrap().x;
             let mut y = game_state.snake.body.last().unwrap().y - game_state.snake.speed;
-            if y <= 0 {
+            if y < 0 {
                 y = WINDOW_HEIGHT;
             }
             game_state.snake.body.push(Vector2::new(x, y));
@@ -165,7 +165,7 @@ fn move_snake(game_state: &mut GameState, d: &RaylibDrawHandle) {
         Direction::Down => {
             let x = game_state.snake.body.last().unwrap().x;
             let mut y = game_state.snake.body.last().unwrap().y + game_state.snake.speed;
-            if y >= WINDOW_HEIGHT {
+            if y > WINDOW_HEIGHT {
                 y = 0;
             }
             game_state.snake.body.push(Vector2::new(x, y));
@@ -173,7 +173,7 @@ fn move_snake(game_state: &mut GameState, d: &RaylibDrawHandle) {
         Direction::Left => {
             let mut x = game_state.snake.body.last().unwrap().x - game_state.snake.speed;
             let y = game_state.snake.body.last().unwrap().y;
-            if x <= 0 {
+            if x < 0 {
                 x = WINDOW_WIDTH;
             }
             game_state.snake.body.push(Vector2::new(x, y));
@@ -181,7 +181,7 @@ fn move_snake(game_state: &mut GameState, d: &RaylibDrawHandle) {
         Direction::Right => {
             let mut x = game_state.snake.body.last().unwrap().x + game_state.snake.speed;
             let y = game_state.snake.body.last().unwrap().y;
-            if x >= WINDOW_WIDTH {
+            if x > WINDOW_WIDTH {
                 x = 0;
             }
             game_state.snake.body.push(Vector2::new(x, y));
