@@ -2,8 +2,8 @@ use rand::Rng;
 use raylib::consts::ffi::KeyboardKey;
 use raylib::prelude::*;
 
-const WINDOW_WIDTH: i32 = 800;
-const WINDOW_HEIGHT: i32 = 450;
+const WINDOW_WIDTH: i32 = 300;
+const WINDOW_HEIGHT: i32 = 300;
 const SNAKE_SIZE: i32 = 10;
 const FOOD_SIZE: i32 = 10;
 
@@ -76,13 +76,14 @@ fn main() {
 
     let mut game_state = GameState::new();
     // TODO probably shouldn't set speed via fps
+    // TODO the movement feels sluggish, maybe need to up fps but keep speed the same
     rl.set_target_fps(10);
     while !rl.window_should_close() {
         let mut d = rl.begin_drawing(&thread);
 
         if game_state.game_over || check_game_over(&game_state.snake) {
             game_state.game_over = true;
-            d.draw_text("Game Over", 320, 225, 20, Color::RED);
+            d.draw_text("Game Over", 100, 140, 20, Color::RED);
             if d.is_key_pressed(KeyboardKey::KEY_ENTER) {
                 game_state = GameState::new();
             }
