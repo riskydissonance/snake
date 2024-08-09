@@ -193,6 +193,11 @@ fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
 
 fn move_snake(game_state: &mut GameState, d: &RaylibDrawHandle) {
     if game_state.time_since_last_move > (1. / game_state.snake.speed) {
+        // TODO - the snake moves in the last pressed direction every time it moves, but that means if you press keys quickly
+        // it will only move in the last direction you pressed not all of the directions if you pressed multiple
+        // keys between moves. This feels clunky when playing when trying to make 'tight turns' quickly.
+        //
+        // Not sure how to fix, we could queue the moves and then execute them each frame, clearing the queue after a period?
         game_state.time_since_last_move = 0.0;
         if matches!(game_state.next_direction, Direction::Up) {
             if !matches!(game_state.snake.direction, Direction::Down) {
