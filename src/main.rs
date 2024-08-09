@@ -34,6 +34,7 @@ enum Direction {
 struct Food {
     position: Vector2,
     eaten: bool,
+    new_food: bool,
 }
 
 struct GameState {
@@ -54,6 +55,7 @@ impl GameState {
             food: Food {
                 position: Vector2::new(0, 0),
                 eaten: true,
+                new_food: false,
             },
             game_over: false,
             time_since_last_move: 0.,
@@ -107,13 +109,7 @@ fn is_in_snake(x: i32, y: i32, snake: &Snake) -> bool {
 }
 
 fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
-    if game_state.food.eaten
-        && is_in_snake(
-            game_state.food.position.x,
-            game_state.food.position.y,
-            &game_state.snake,
-        )
-    {
+    if game_state.food.new_food {
         let mut rng = rand::thread_rng();
         let mut x = ((rng.gen_range(0..WINDOW_WIDTH) + 5) / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
         let mut y = ((rng.gen_range(0..WINDOW_HEIGHT) + 5) / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
@@ -123,6 +119,7 @@ fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
         }
         game_state.food.position.x = x;
         game_state.food.position.y = y;
+        game_state.food.new_food = false;
     } else {
         if is_in_snake(
             game_state.food.position.x,
@@ -130,6 +127,7 @@ fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
             &game_state.snake,
         ) {
             game_state.food.eaten = true;
+            game_state.food.new_food = true;
         }
     }
     d.draw_circle(
