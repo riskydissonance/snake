@@ -5,7 +5,7 @@ use raylib::prelude::*;
 const WINDOW_WIDTH: i32 = 300;
 const WINDOW_HEIGHT: i32 = 300;
 const SNAKE_SIZE: i32 = 10;
-const FOOD_SIZE: i32 = 10;
+const FOOD_RADIUS: i32 = 5;
 
 const GRID_SQUARE_SIZE: i32 = 10;
 const SNAKE_BASE_SPEED: f32 = 8.;
@@ -132,11 +132,10 @@ fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
             game_state.food.eaten = true;
         }
     }
-    d.draw_rectangle(
-        game_state.food.position.x,
-        game_state.food.position.y,
-        FOOD_SIZE,
-        FOOD_SIZE,
+    d.draw_circle(
+        game_state.food.position.x + FOOD_RADIUS,
+        game_state.food.position.y + FOOD_RADIUS,
+        FOOD_RADIUS as f32,
         Color::BLACK,
     );
 }
