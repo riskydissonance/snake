@@ -10,11 +10,7 @@ const FOOD_SIZE: i32 = 10;
 const GRID_SQUARE_SIZE: i32 = 10;
 
 // TODO
-// - Add rendering increasing length
-// - Add self-collision detection
-// - Add score
 // - Add speed increase
-// - Add cross-over sides of screen
 
 struct Vector2 {
     x: i32,
@@ -95,6 +91,7 @@ fn main() {
         move_snake(&mut game_state, &d);
         draw_snake(&game_state.snake, &mut d);
         draw_food(&mut game_state, &mut d);
+        draw_score(game_state.snake.body.len(), &mut d);
     }
 }
 
@@ -223,4 +220,8 @@ fn check_game_over(snake: &Snake) -> bool {
         }
     }
     return false;
+}
+
+fn draw_score(score: usize, d: &mut RaylibDrawHandle) {
+    d.draw_text(&format!("{}", score), 10, 10, 12, Color::BLACK);
 }
