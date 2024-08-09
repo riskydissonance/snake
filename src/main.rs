@@ -8,6 +8,7 @@ const SNAKE_SIZE: i32 = 10;
 const FOOD_SIZE: i32 = 10;
 
 const GRID_SQUARE_SIZE: i32 = 10;
+const SNAKE_BASE_SPEED: f32 = 8.;
 
 // TODO
 // - Add speed increase
@@ -39,6 +40,7 @@ struct GameState {
     snake: Snake,
     food: Food,
     game_over: bool,
+    time_since_last_move: f32,
 }
 
 impl GameState {
@@ -47,13 +49,14 @@ impl GameState {
             snake: Snake {
                 body: vec![Vector2::new(0, 0)],
                 direction: Direction::Down,
-                speed: GRID_SQUARE_SIZE,
+                speed: SNAKE_BASE_SPEED,
             },
             food: Food {
                 position: Vector2::new(0, 0),
                 eaten: true,
             },
             game_over: false,
+            time_since_last_move: 0.,
         }
     }
 }
@@ -61,7 +64,7 @@ impl GameState {
 struct Snake {
     body: Vec<Vector2>,
     direction: Direction,
-    speed: i32,
+    speed: f32,
 }
 
 fn main() {
@@ -71,10 +74,10 @@ fn main() {
         .build();
 
     let mut game_state = GameState::new();
-    // TODO probably shouldn't set speed via fps
-    // TODO the movement feels sluggish, maybe need to up fps but keep speed the same
-    rl.set_target_fps(10);
+    rl.set_target_fps(120);
     while !rl.window_should_close() {
+        let delta_time = rl.get_frame_time();
+        game_state.time_since_last_move += delta_time;
         let mut d = rl.begin_drawing(&thread);
 
         if game_state.game_over || check_game_over(&game_state.snake) {
@@ -87,7 +90,6 @@ fn main() {
         }
 
         d.clear_background(Color::DARKGREEN);
-
         move_snake(&mut game_state, &d);
         draw_snake(&game_state.snake, &mut d);
         draw_food(&mut game_state, &mut d);
@@ -105,7 +107,13 @@ fn is_in_snake(x: i32, y: i32, snake: &Snake) -> bool {
 }
 
 fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
-    if game_state.food.eaten {
+    if game_state.food.eaten
+        && is_in_snake(
+            game_state.food.position.x,
+            game_state.food.position.y,
+            &game_state.snake,
+        )
+    {
         let mut rng = rand::thread_rng();
         let mut x = ((rng.gen_range(0..WINDOW_WIDTH) + 5) / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
         let mut y = ((rng.gen_range(0..WINDOW_HEIGHT) + 5) / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
@@ -115,7 +123,6 @@ fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
         }
         game_state.food.position.x = x;
         game_state.food.position.y = y;
-        game_state.food.eaten = false;
     } else {
         if is_in_snake(
             game_state.food.position.x,
@@ -161,7 +168,10 @@ fn move_snake(game_state: &mut GameState, d: &RaylibDrawHandle) {
         }
     }
 
-    match game_state.snake.direction {
+    if game_state.time_since_last_move > (1. / game_state.snake.speed) {
+        game_state.time_since_last_move = 0.0;
+
+        match game_state.snake.direction {
             Direction::Up => {
                 let x = game_state.snake.body.last().unwrap().x;
                 let mut y = game_state.snake.body.last().unwrap().y - GRID_SQUARE_SIZE;
@@ -195,10 +205,12 @@ fn move_snake(game_state: &mut GameState, d: &RaylibDrawHandle) {
                 game_state.snake.body.push(Vector2::new(x, y));
             }
         }
-    }
 
-    if !game_state.food.eaten {
-        game_state.snake.body.remove(0);
+        if !game_state.food.eaten {
+            game_state.snake.body.remove(0);
+        } else {
+            game_state.food.eaten = false
+        }
     }
 }
 
