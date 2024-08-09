@@ -12,6 +12,7 @@ const SNAKE_BASE_SPEED: f32 = 10.;
 const SNAKE_SPEED_INCREASE: f32 = 0.25;
 const BORDER_OFFSET: i32 = 5;
 
+#[derive(Debug)]
 struct Vector2 {
     x: i32,
     y: i32,
@@ -23,6 +24,7 @@ impl Vector2 {
     }
 }
 
+#[derive(Debug)]
 enum Direction {
     Up,
     Down,
@@ -30,12 +32,14 @@ enum Direction {
     Right,
 }
 
+#[derive(Debug)]
 struct Food {
     position: Vector2,
     eaten: bool,
     new_food: bool,
 }
 
+#[derive(Debug)]
 struct GameState {
     snake: Snake,
     food: Food,
@@ -62,6 +66,7 @@ impl GameState {
     }
 }
 
+#[derive(Debug)]
 struct Snake {
     body: Vec<Vector2>,
     direction: Direction,
