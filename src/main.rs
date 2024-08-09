@@ -91,7 +91,7 @@ fn main() {
         move_snake(&mut game_state, &d);
         draw_snake(&game_state.snake, &mut d);
         draw_food(&mut game_state, &mut d);
-        draw_score(game_state.snake.body.len(), &mut d);
+        draw_score(game_state.snake.body.len() - 1, &mut d);
     }
 }
 
