@@ -45,6 +45,7 @@ struct GameState {
     food: Food,
     game_over: bool,
     time_since_last_move: f32,
+    next_direction: Direction,
 }
 
 impl GameState {
@@ -62,6 +63,7 @@ impl GameState {
             },
             game_over: false,
             time_since_last_move: 0.,
+            next_direction: Direction::Down,
         }
     }
 }
@@ -124,6 +126,20 @@ fn main() {
             WINDOW_HEIGHT - BORDER_OFFSET,
             Color::BLACK,
         );
+
+        if d.is_key_pressed(KeyboardKey::KEY_UP) {
+            game_state.next_direction = Direction::Up;
+        }
+        if d.is_key_pressed(KeyboardKey::KEY_DOWN) {
+            game_state.next_direction = Direction::Down;
+        }
+        if d.is_key_pressed(KeyboardKey::KEY_LEFT) {
+            game_state.next_direction = Direction::Left;
+        }
+        if d.is_key_pressed(KeyboardKey::KEY_RIGHT) {
+            game_state.next_direction = Direction::Right;
+        }
+
         move_snake(&mut game_state, &d);
         draw_snake(&game_state.snake, &mut d);
         draw_food(&mut game_state, &mut d);
@@ -176,34 +192,28 @@ fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
 }
 
 fn move_snake(game_state: &mut GameState, d: &RaylibDrawHandle) {
-    // TODO there has to be nicer way to do this
-    if d.is_key_pressed(KeyboardKey::KEY_UP) {
-        if let Direction::Down = game_state.snake.direction {
-        } else {
-            game_state.snake.direction = Direction::Up;
-        }
-    }
-    if d.is_key_pressed(KeyboardKey::KEY_DOWN) {
-        if let Direction::Up = game_state.snake.direction {
-        } else {
-            game_state.snake.direction = Direction::Down;
-        }
-    }
-    if d.is_key_pressed(KeyboardKey::KEY_LEFT) {
-        if let Direction::Right = game_state.snake.direction {
-        } else {
-            game_state.snake.direction = Direction::Left;
-        }
-    }
-    if d.is_key_pressed(KeyboardKey::KEY_RIGHT) {
-        if let Direction::Left = game_state.snake.direction {
-        } else {
-            game_state.snake.direction = Direction::Right;
-        }
-    }
-
     if game_state.time_since_last_move > (1. / game_state.snake.speed) {
         game_state.time_since_last_move = 0.0;
+        if matches!(game_state.next_direction, Direction::Up) {
+            if !matches!(game_state.snake.direction, Direction::Down) {
+                game_state.snake.direction = Direction::Up;
+            }
+        }
+        if matches!(game_state.next_direction, Direction::Down) {
+            if !matches!(game_state.snake.direction, Direction::Up) {
+                game_state.snake.direction = Direction::Down;
+            }
+        }
+        if matches!(game_state.next_direction, Direction::Left) {
+            if !matches!(game_state.snake.direction, Direction::Right) {
+                game_state.snake.direction = Direction::Left;
+            }
+        }
+        if matches!(game_state.next_direction, Direction::Right) {
+            if !matches!(game_state.snake.direction, Direction::Left) {
+                game_state.snake.direction = Direction::Right;
+            }
+        }
 
         match game_state.snake.direction {
             Direction::Up => {
