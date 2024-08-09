@@ -140,7 +140,7 @@ fn main() {
             game_state.next_direction = Direction::Right;
         }
 
-        move_snake(&mut game_state, &d);
+        move_snake(&mut game_state);
         draw_snake(&game_state.snake, &mut d);
         draw_food(&mut game_state, &mut d);
         draw_score(game_state.snake.body.len() - 1, &mut d);
@@ -191,7 +191,7 @@ fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
     );
 }
 
-fn move_snake(game_state: &mut GameState, d: &RaylibDrawHandle) {
+fn move_snake(game_state: &mut GameState) {
     if game_state.time_since_last_move > (1. / game_state.snake.speed) {
         // TODO - the snake moves in the last pressed direction every time it moves, but that means if you press keys quickly
         // it will only move in the last direction you pressed not all of the directions if you pressed multiple
