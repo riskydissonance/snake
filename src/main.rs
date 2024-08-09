@@ -162,38 +162,38 @@ fn move_snake(game_state: &mut GameState, d: &RaylibDrawHandle) {
     }
 
     match game_state.snake.direction {
-        // TODO i think this will break if speed isn't 1 unit
-        Direction::Up => {
-            let x = game_state.snake.body.last().unwrap().x;
-            let mut y = game_state.snake.body.last().unwrap().y - game_state.snake.speed;
-            if y < 0 {
-                y = WINDOW_HEIGHT;
+            Direction::Up => {
+                let x = game_state.snake.body.last().unwrap().x;
+                let mut y = game_state.snake.body.last().unwrap().y - GRID_SQUARE_SIZE;
+                if y < 0 {
+                    y = WINDOW_HEIGHT - GRID_SQUARE_SIZE;
+                }
+                game_state.snake.body.push(Vector2::new(x, y));
             }
-            game_state.snake.body.push(Vector2::new(x, y));
-        }
-        Direction::Down => {
-            let x = game_state.snake.body.last().unwrap().x;
-            let mut y = game_state.snake.body.last().unwrap().y + game_state.snake.speed;
-            if y > WINDOW_HEIGHT {
-                y = 0;
+            Direction::Down => {
+                let x = game_state.snake.body.last().unwrap().x;
+                let mut y = game_state.snake.body.last().unwrap().y + GRID_SQUARE_SIZE;
+                if y + GRID_SQUARE_SIZE > WINDOW_HEIGHT {
+                    y = 0;
+                }
+                game_state.snake.body.push(Vector2::new(x, y));
             }
-            game_state.snake.body.push(Vector2::new(x, y));
-        }
-        Direction::Left => {
-            let mut x = game_state.snake.body.last().unwrap().x - game_state.snake.speed;
-            let y = game_state.snake.body.last().unwrap().y;
-            if x < 0 {
-                x = WINDOW_WIDTH;
+            Direction::Left => {
+                let mut x = game_state.snake.body.last().unwrap().x - GRID_SQUARE_SIZE;
+                let y = game_state.snake.body.last().unwrap().y;
+                if x < 0 {
+                    x = WINDOW_WIDTH - GRID_SQUARE_SIZE;
+                }
+                game_state.snake.body.push(Vector2::new(x, y));
             }
-            game_state.snake.body.push(Vector2::new(x, y));
-        }
-        Direction::Right => {
-            let mut x = game_state.snake.body.last().unwrap().x + game_state.snake.speed;
-            let y = game_state.snake.body.last().unwrap().y;
-            if x > WINDOW_WIDTH {
-                x = 0;
+            Direction::Right => {
+                let mut x = game_state.snake.body.last().unwrap().x + GRID_SQUARE_SIZE;
+                let y = game_state.snake.body.last().unwrap().y;
+                if x + GRID_SQUARE_SIZE > WINDOW_WIDTH {
+                    x = 0;
+                }
+                game_state.snake.body.push(Vector2::new(x, y));
             }
-            game_state.snake.body.push(Vector2::new(x, y));
         }
     }
 
