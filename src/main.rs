@@ -10,8 +10,7 @@ const FOOD_RADIUS: i32 = 5;
 const GRID_SQUARE_SIZE: i32 = 10;
 const SNAKE_BASE_SPEED: f32 = 10.;
 const SNAKE_SPEED_INCREASE: f32 = 0.25;
-// TODO
-// - Add speed increase
+const BORDER_OFFSET: i32 = 5;
 
 struct Vector2 {
     x: i32,
@@ -91,7 +90,35 @@ fn main() {
             continue;
         }
 
-        d.clear_background(Color::DARKGREEN);
+        d.clear_background(Color::LIGHTGREEN);
+        d.draw_line(
+            BORDER_OFFSET,
+            BORDER_OFFSET,
+            WINDOW_WIDTH - BORDER_OFFSET,
+            BORDER_OFFSET,
+            Color::BLACK,
+        );
+        d.draw_line(
+            BORDER_OFFSET,
+            BORDER_OFFSET,
+            BORDER_OFFSET,
+            WINDOW_HEIGHT - BORDER_OFFSET,
+            Color::BLACK,
+        );
+        d.draw_line(
+            WINDOW_WIDTH - BORDER_OFFSET,
+            BORDER_OFFSET,
+            WINDOW_WIDTH - BORDER_OFFSET,
+            WINDOW_HEIGHT - BORDER_OFFSET,
+            Color::BLACK,
+        );
+        d.draw_line(
+            BORDER_OFFSET,
+            WINDOW_HEIGHT - BORDER_OFFSET,
+            WINDOW_WIDTH - BORDER_OFFSET,
+            WINDOW_HEIGHT - BORDER_OFFSET,
+            Color::BLACK,
+        );
         move_snake(&mut game_state, &d);
         draw_snake(&game_state.snake, &mut d);
         draw_food(&mut game_state, &mut d);
