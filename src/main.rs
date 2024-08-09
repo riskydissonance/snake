@@ -138,11 +138,15 @@ fn is_in_snake(x: i32, y: i32, snake: &Snake) -> bool {
 fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
     if game_state.food.new_food {
         let mut rng = rand::thread_rng();
-        let mut x = ((rng.gen_range(0..WINDOW_WIDTH) + 5) / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
-        let mut y = ((rng.gen_range(0..WINDOW_HEIGHT) + 5) / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
+        let mut x = (rng.gen_range(SNAKE_SIZE..WINDOW_WIDTH - SNAKE_SIZE) / GRID_SQUARE_SIZE)
+            * GRID_SQUARE_SIZE;
+        let mut y = (rng.gen_range(SNAKE_SIZE..WINDOW_HEIGHT - SNAKE_SIZE) / GRID_SQUARE_SIZE)
+            * GRID_SQUARE_SIZE;
         while is_in_snake(x, y, &game_state.snake) {
-            x = ((rng.gen_range(0..WINDOW_WIDTH) + 5) / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
-            y = ((rng.gen_range(0..WINDOW_HEIGHT) + 5) / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE;
+            x = (rng.gen_range(SNAKE_SIZE..WINDOW_WIDTH - SNAKE_SIZE) / GRID_SQUARE_SIZE)
+                * GRID_SQUARE_SIZE;
+            y = (rng.gen_range(SNAKE_SIZE..WINDOW_HEIGHT - SNAKE_SIZE) / GRID_SQUARE_SIZE)
+                * GRID_SQUARE_SIZE;
         }
         game_state.food.position.x = x;
         game_state.food.position.y = y;
