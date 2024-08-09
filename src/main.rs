@@ -9,7 +9,7 @@ const FOOD_RADIUS: i32 = 5;
 
 const GRID_SQUARE_SIZE: i32 = 10;
 const SNAKE_BASE_SPEED: f32 = 10.;
-
+const SNAKE_SPEED_INCREASE: f32 = 0.25;
 // TODO
 // - Add speed increase
 
@@ -128,6 +128,7 @@ fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
         ) {
             game_state.food.eaten = true;
             game_state.food.new_food = true;
+            game_state.snake.speed += SNAKE_SPEED_INCREASE;
         }
     }
     d.draw_circle(
