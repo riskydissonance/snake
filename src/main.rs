@@ -71,7 +71,7 @@ struct Snake {
 fn main() {
     let (mut rl, thread) = raylib::init()
         .size(WINDOW_WIDTH, WINDOW_HEIGHT)
-        .title("Snake")
+        .title("Snek")
         .build();
 
     let mut game_state = GameState::new();
