@@ -12,6 +12,8 @@ const SNAKE_BASE_SPEED: f32 = 10.;
 const SNAKE_SPEED_INCREASE: f32 = 0.25;
 const BORDER_OFFSET: i32 = 5;
 
+const MAX_MOVEMENT_QUEUE: usize = 3;
+
 #[derive(Debug)]
 struct Vector2 {
     x: i32,
@@ -24,7 +26,7 @@ impl Vector2 {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum Direction {
     Up,
     Down,
@@ -45,7 +47,8 @@ struct GameState {
     food: Food,
     game_over: bool,
     time_since_last_move: f32,
-    next_direction: Direction,
+    direction_queue: Vec<Direction>
+
 }
 
 impl GameState {
@@ -63,7 +66,7 @@ impl GameState {
             },
             game_over: false,
             time_since_last_move: 0.,
-            next_direction: Direction::Down,
+            direction_queue: Vec::with_capacity(MAX_MOVEMENT_QUEUE)
         }
     }
 }
@@ -131,23 +134,30 @@ fn main() {
         );
 
         if d.is_key_pressed(KeyboardKey::KEY_UP) {
-            game_state.next_direction = Direction::Up;
+            record_next_direction_change(&mut game_state, Direction::Up);
         }
         if d.is_key_pressed(KeyboardKey::KEY_DOWN) {
-            game_state.next_direction = Direction::Down;
+            record_next_direction_change(&mut game_state, Direction::Down);
         }
         if d.is_key_pressed(KeyboardKey::KEY_LEFT) {
-            game_state.next_direction = Direction::Left;
+            record_next_direction_change(&mut game_state, Direction::Left);
         }
         if d.is_key_pressed(KeyboardKey::KEY_RIGHT) {
-            game_state.next_direction = Direction::Right;
+            record_next_direction_change(&mut game_state, Direction::Right);
         }
-
         move_snake(&mut game_state);
         draw_snake(&game_state.snake, &mut d);
         draw_food(&mut game_state, &mut d);
         draw_score(game_state.snake.body.len() - 1, &mut d);
     }
+}
+
+fn record_next_direction_change(game_state: &mut GameState, direction: Direction)
+{
+    if game_state.direction_queue.len() == MAX_MOVEMENT_QUEUE {
+        game_state.direction_queue.clear();
+    }
+    game_state.direction_queue.push(direction);
 }
 
 fn is_in_snake(x: i32, y: i32, snake: &Snake) -> bool {
@@ -156,7 +166,7 @@ fn is_in_snake(x: i32, y: i32, snake: &Snake) -> bool {
             return true;
         }
     }
-    return false;
+    false
 }
 
 fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
@@ -196,33 +206,29 @@ fn draw_food(game_state: &mut GameState, d: &mut RaylibDrawHandle) {
 
 fn move_snake(game_state: &mut GameState) {
     if game_state.time_since_last_move > (1. / game_state.snake.speed) {
-        // TODO - the snake moves in the last pressed direction every time it moves, but that means if you press keys quickly
-        // it will only move in the last direction you pressed not all of the directions if you pressed multiple
-        // keys between moves. This feels clunky when playing when trying to make 'tight turns' quickly.
-        //
-        // Not sure how to fix, we could queue the moves and then execute them each frame, clearing the queue after a period?
         game_state.time_since_last_move = 0.0;
-        if matches!(game_state.next_direction, Direction::Up) {
-            if !matches!(game_state.snake.direction, Direction::Down) {
-                game_state.snake.direction = Direction::Up;
+        if let Some(next_direction) = game_state.direction_queue.pop() {
+            if matches!(next_direction, Direction::Up) {
+                if !matches!(game_state.snake.direction, Direction::Down) {
+                    game_state.snake.direction = Direction::Up;
+                }
+            }
+            if matches!(next_direction, Direction::Down) {
+                if !matches!(game_state.snake.direction, Direction::Up) {
+                    game_state.snake.direction = Direction::Down;
+                }
+            }
+            if matches!(next_direction, Direction::Left) {
+                if !matches!(game_state.snake.direction, Direction::Right) {
+                    game_state.snake.direction = Direction::Left;
+                }
+            }
+            if matches!(next_direction, Direction::Right) {
+                if !matches!(game_state.snake.direction, Direction::Left) {
+                    game_state.snake.direction = Direction::Right;
+                }
             }
         }
-        if matches!(game_state.next_direction, Direction::Down) {
-            if !matches!(game_state.snake.direction, Direction::Up) {
-                game_state.snake.direction = Direction::Down;
-            }
-        }
-        if matches!(game_state.next_direction, Direction::Left) {
-            if !matches!(game_state.snake.direction, Direction::Right) {
-                game_state.snake.direction = Direction::Left;
-            }
-        }
-        if matches!(game_state.next_direction, Direction::Right) {
-            if !matches!(game_state.snake.direction, Direction::Left) {
-                game_state.snake.direction = Direction::Right;
-            }
-        }
-
         match game_state.snake.direction {
             Direction::Up => {
                 let x = game_state.snake.body.last().unwrap().x;
@@ -283,7 +289,7 @@ fn check_game_over(snake: &Snake) -> bool {
             }
         }
     }
-    return false;
+    false
 }
 
 fn draw_score(score: usize, d: &mut RaylibDrawHandle) {
