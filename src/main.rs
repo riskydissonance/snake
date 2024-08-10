@@ -8,7 +8,7 @@ const SNAKE_SIZE: i32 = 10;
 const FOOD_RADIUS: i32 = 5;
 
 const GRID_SQUARE_SIZE: i32 = 10;
-const SNAKE_BASE_SPEED: f32 = 10.;
+const SNAKE_BASE_SPEED: f32 = 12.;
 const SNAKE_SPEED_INCREASE: f32 = 0.25;
 const BORDER_OFFSET: i32 = 5;
 
