@@ -100,6 +100,7 @@ fn main() {
             draw_snake(&game_state.snake, &mut d);
             draw_food(&mut game_state, &mut d);
             draw_score(game_state.snake.body.len() - 1, &mut d);
+            draw_border(&mut d);
             d.draw_text("Game Over", 100, 140, 20, Color::RED);
             if d.is_key_pressed(KeyboardKey::KEY_ENTER) {
                 game_state = GameState::new();
@@ -108,35 +109,6 @@ fn main() {
         }
 
         game_state.time_since_last_move += delta_time;
-
-        d.draw_line(
-            BORDER_OFFSET,
-            BORDER_OFFSET,
-            WINDOW_WIDTH - BORDER_OFFSET,
-            BORDER_OFFSET,
-            Color::BLACK,
-        );
-        d.draw_line(
-            BORDER_OFFSET,
-            BORDER_OFFSET,
-            BORDER_OFFSET,
-            WINDOW_HEIGHT - BORDER_OFFSET,
-            Color::BLACK,
-        );
-        d.draw_line(
-            WINDOW_WIDTH - BORDER_OFFSET,
-            BORDER_OFFSET,
-            WINDOW_WIDTH - BORDER_OFFSET,
-            WINDOW_HEIGHT - BORDER_OFFSET,
-            Color::BLACK,
-        );
-        d.draw_line(
-            BORDER_OFFSET,
-            WINDOW_HEIGHT - BORDER_OFFSET,
-            WINDOW_WIDTH - BORDER_OFFSET,
-            WINDOW_HEIGHT - BORDER_OFFSET,
-            Color::BLACK,
-        );
 
         if d.is_key_pressed(KeyboardKey::KEY_UP) {
             record_next_direction_change(&mut game_state, Direction::Up);
@@ -154,7 +126,39 @@ fn main() {
         draw_snake(&game_state.snake, &mut d);
         draw_food(&mut game_state, &mut d);
         draw_score(game_state.snake.body.len() - 1, &mut d);
+        draw_border(&mut d);
     }
+}
+
+fn draw_border(d: &mut RaylibDrawHandle) {
+    d.draw_line(
+        BORDER_OFFSET,
+        BORDER_OFFSET,
+        WINDOW_WIDTH - BORDER_OFFSET,
+        BORDER_OFFSET,
+        Color::BLACK,
+    );
+    d.draw_line(
+        BORDER_OFFSET,
+        BORDER_OFFSET,
+        BORDER_OFFSET,
+        WINDOW_HEIGHT - BORDER_OFFSET,
+        Color::BLACK,
+    );
+    d.draw_line(
+        WINDOW_WIDTH - BORDER_OFFSET,
+        BORDER_OFFSET,
+        WINDOW_WIDTH - BORDER_OFFSET,
+        WINDOW_HEIGHT - BORDER_OFFSET,
+        Color::BLACK,
+    );
+    d.draw_line(
+        BORDER_OFFSET,
+        WINDOW_HEIGHT - BORDER_OFFSET,
+        WINDOW_WIDTH - BORDER_OFFSET,
+        WINDOW_HEIGHT - BORDER_OFFSET,
+        Color::BLACK,
+    );
 }
 
 fn record_next_direction_change(game_state: &mut GameState, direction: Direction) {
