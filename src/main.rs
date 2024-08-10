@@ -47,8 +47,7 @@ struct GameState {
     food: Food,
     game_over: bool,
     time_since_last_move: f32,
-    direction_queue: Vec<Direction>
-
+    direction_queue: Vec<Direction>,
 }
 
 impl GameState {
@@ -66,7 +65,7 @@ impl GameState {
             },
             game_over: false,
             time_since_last_move: 0.,
-            direction_queue: Vec::with_capacity(MAX_MOVEMENT_QUEUE)
+            direction_queue: Vec::with_capacity(MAX_MOVEMENT_QUEUE),
         }
     }
 }
@@ -84,18 +83,21 @@ fn main() {
         .title("Snek")
         .build();
 
-    let logo = Image::load_image("cobra.png").unwrap();
+    let logo = Image::load_image("cobra.png").expect("Could not find cobra.png icon");
     rl.set_window_icon(&logo);
 
     let mut game_state = GameState::new();
     rl.set_target_fps(120);
     while !rl.window_should_close() {
         let delta_time = rl.get_frame_time();
-        game_state.time_since_last_move += delta_time;
         let mut d = rl.begin_drawing(&thread);
+        d.clear_background(Color::LIGHTGREEN);
 
         if game_state.game_over || check_game_over(&game_state.snake) {
             game_state.game_over = true;
+            draw_snake(&game_state.snake, &mut d);
+            draw_food(&mut game_state, &mut d);
+            draw_score(game_state.snake.body.len() - 1, &mut d);
             d.draw_text("Game Over", 100, 140, 20, Color::RED);
             if d.is_key_pressed(KeyboardKey::KEY_ENTER) {
                 game_state = GameState::new();
@@ -103,7 +105,8 @@ fn main() {
             continue;
         }
 
-        d.clear_background(Color::LIGHTGREEN);
+        game_state.time_since_last_move += delta_time;
+
         d.draw_line(
             BORDER_OFFSET,
             BORDER_OFFSET,
@@ -152,8 +155,7 @@ fn main() {
     }
 }
 
-fn record_next_direction_change(game_state: &mut GameState, direction: Direction)
-{
+fn record_next_direction_change(game_state: &mut GameState, direction: Direction) {
     if game_state.direction_queue.len() == MAX_MOVEMENT_QUEUE {
         game_state.direction_queue.clear();
     }
