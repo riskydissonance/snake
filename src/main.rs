@@ -12,7 +12,7 @@ const SNAKE_BASE_SPEED: f32 = 10.;
 const SNAKE_SPEED_INCREASE: f32 = 0.25;
 const BORDER_OFFSET: i32 = 5;
 
-const MAX_MOVEMENT_QUEUE: usize = 3;
+const MAX_MOVEMENT_QUEUE: usize = 10;
 
 #[derive(Debug)]
 struct Vector2 {
