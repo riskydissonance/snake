@@ -81,6 +81,9 @@ fn main() {
         .title("Snek")
         .build();
 
+    let logo = Image::load_image("cobra.png").unwrap();
+    rl.set_window_icon(&logo);
+
     let mut game_state = GameState::new();
     rl.set_target_fps(120);
     while !rl.window_should_close() {
