@@ -83,8 +83,10 @@ fn main() {
         .title("Snek")
         .build();
 
-    let logo = Image::load_image("cobra.png").expect("Could not find cobra.png icon");
-    rl.set_window_icon(&logo);
+    if !cfg!(target_family = "wasm") {
+        let logo = Image::load_image("cobra.png").expect("Could not find cobra.png icon");
+        rl.set_window_icon(&logo);
+    }
 
     let mut game_state = GameState::new();
     rl.set_target_fps(120);
