@@ -137,19 +137,17 @@ fn main() {
                 }
             }
         }
-        else {
-            if d.is_key_pressed(KeyboardKey::KEY_UP) {
-                record_next_direction_change(&mut game_state, Direction::Up);
-            }
-            if d.is_key_pressed(KeyboardKey::KEY_DOWN) {
-                record_next_direction_change(&mut game_state, Direction::Down);
-            }
-            if d.is_key_pressed(KeyboardKey::KEY_LEFT) {
-                record_next_direction_change(&mut game_state, Direction::Left);
-            }
-            if d.is_key_pressed(KeyboardKey::KEY_RIGHT) {
-                record_next_direction_change(&mut game_state, Direction::Right);
-            }
+        if d.is_key_pressed(KeyboardKey::KEY_UP) {
+            record_next_direction_change(&mut game_state, Direction::Up);
+        }
+        if d.is_key_pressed(KeyboardKey::KEY_DOWN) {
+            record_next_direction_change(&mut game_state, Direction::Down);
+        }
+        if d.is_key_pressed(KeyboardKey::KEY_LEFT) {
+            record_next_direction_change(&mut game_state, Direction::Left);
+        }
+        if d.is_key_pressed(KeyboardKey::KEY_RIGHT) {
+            record_next_direction_change(&mut game_state, Direction::Right);
         }
 
         move_snake(&mut game_state);
