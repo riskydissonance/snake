@@ -24,10 +24,6 @@ const LEFT_TOUCH_CONTROL: rectangle::Rectangle = rectangle::Rectangle::new(20, 8
 const RIGHT_TOUCH_CONTROL: rectangle::Rectangle = rectangle::Rectangle::new(230, 88, CONTROL_SHORT, CONTROL_LONG, Color::new(150, 150, 150, 50));
 const BOTTOM_TOUCH_CONTROL: rectangle::Rectangle = rectangle::Rectangle::new(88, 230, CONTROL_LONG, CONTROL_SHORT, Color::new(150, 150, 150, 50));
 
-//TODO see if we can only enable this on mobile devices with touch support and no keyboard
-static MOUSE_CONTROL: bool = true;
-
-
 #[derive(Debug)]
 struct Vector2 {
     x: i32,
@@ -124,53 +120,47 @@ fn main() {
 
         game_state.time_since_last_move += delta_time;
 
-        if MOUSE_CONTROL {
-            if d.is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT) {
-                let mouse_point = Vector2::new(d.get_mouse_x(), d.get_mouse_y());
-                if LEFT_TOUCH_CONTROL.intersects(&mouse_point) {
+        if cfg!(target_family = "wasm") {
+            if d.get_touch_point_count() == 1 {
+                let touch_point = Vector2::new(d.get_touch_x(), d.get_touch_y());
+                if LEFT_TOUCH_CONTROL.intersects(&touch_point) {
                     record_next_direction_change(&mut game_state, Direction::Left);
                 }
-                if TOP_TOUCH_CONTROL.intersects(&mouse_point) {
+                if TOP_TOUCH_CONTROL.intersects(&touch_point) {
                     record_next_direction_change(&mut game_state, Direction::Up);
                 }
-                if RIGHT_TOUCH_CONTROL.intersects(&mouse_point) {
+                if RIGHT_TOUCH_CONTROL.intersects(&touch_point) {
                     record_next_direction_change(&mut game_state, Direction::Right);
                 }
-                if BOTTOM_TOUCH_CONTROL.intersects(&mouse_point) {
+                if BOTTOM_TOUCH_CONTROL.intersects(&touch_point) {
                     record_next_direction_change(&mut game_state, Direction::Down);
                 }
             }
         }
+        else {
+            if d.is_key_pressed(KeyboardKey::KEY_UP) {
+                record_next_direction_change(&mut game_state, Direction::Up);
+            }
+            if d.is_key_pressed(KeyboardKey::KEY_DOWN) {
+                record_next_direction_change(&mut game_state, Direction::Down);
+            }
+            if d.is_key_pressed(KeyboardKey::KEY_LEFT) {
+                record_next_direction_change(&mut game_state, Direction::Left);
+            }
+            if d.is_key_pressed(KeyboardKey::KEY_RIGHT) {
+                record_next_direction_change(&mut game_state, Direction::Right);
+            }
+        }
 
-        if d.is_key_pressed(KeyboardKey::KEY_UP) {
-            record_next_direction_change(&mut game_state, Direction::Up);
-        }
-        if d.is_key_pressed(KeyboardKey::KEY_DOWN) {
-            record_next_direction_change(&mut game_state, Direction::Down);
-        }
-        if d.is_key_pressed(KeyboardKey::KEY_LEFT) {
-            record_next_direction_change(&mut game_state, Direction::Left);
-        }
-        if d.is_key_pressed(KeyboardKey::KEY_RIGHT) {
-            record_next_direction_change(&mut game_state, Direction::Right);
-        }
         move_snake(&mut game_state);
         draw_snake(&game_state.snake, &mut d);
         draw_food(&mut game_state, &mut d);
         draw_score(game_state.snake.body.len() - 1, &mut d);
         draw_border(&mut d);
-        if MOUSE_CONTROL {
-            draw_mouse_controls(&mut d);
-        }
     }
 }
 
-fn draw_mouse_controls(d: &mut RaylibDrawHandle) {
-    TOP_TOUCH_CONTROL.draw(d);
-    LEFT_TOUCH_CONTROL.draw(d);
-    BOTTOM_TOUCH_CONTROL.draw(d);
-    RIGHT_TOUCH_CONTROL.draw(d);
-}
+
 
 fn draw_border(d: &mut RaylibDrawHandle) {
     d.draw_line(
