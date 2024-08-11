@@ -19,10 +19,10 @@ const CONTROL_SHORT: i32 = 50;
 
 const MAX_MOVEMENT_QUEUE: usize = 10;
 
-const TOP_TOUCH_CONTROL: rectangle::Rectangle = rectangle::Rectangle::new(88, 20, CONTROL_LONG, CONTROL_SHORT, Color::new(150, 150, 150, 50));
-const LEFT_TOUCH_CONTROL: rectangle::Rectangle = rectangle::Rectangle::new(20, 88, CONTROL_SHORT, CONTROL_LONG, Color::new(150, 150, 150, 50));
-const RIGHT_TOUCH_CONTROL: rectangle::Rectangle = rectangle::Rectangle::new(230, 88, CONTROL_SHORT, CONTROL_LONG, Color::new(150, 150, 150, 50));
-const BOTTOM_TOUCH_CONTROL: rectangle::Rectangle = rectangle::Rectangle::new(88, 230, CONTROL_LONG, CONTROL_SHORT, Color::new(150, 150, 150, 50));
+const TOP_TOUCH_CONTROL: rectangle::Rectangle = rectangle::Rectangle::new(88, 20, CONTROL_LONG, CONTROL_SHORT);
+const LEFT_TOUCH_CONTROL: rectangle::Rectangle = rectangle::Rectangle::new(20, 88, CONTROL_SHORT, CONTROL_LONG);
+const RIGHT_TOUCH_CONTROL: rectangle::Rectangle = rectangle::Rectangle::new(230, 88, CONTROL_SHORT, CONTROL_LONG);
+const BOTTOM_TOUCH_CONTROL: rectangle::Rectangle = rectangle::Rectangle::new(88, 230, CONTROL_LONG, CONTROL_SHORT);
 
 #[derive(Debug)]
 struct Vector2 {
